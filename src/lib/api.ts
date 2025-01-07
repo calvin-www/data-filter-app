@@ -31,12 +31,3 @@ export async function fetchIncomeStatements(
 
   return response.json();
 }
-
-// This function is no longer needed as filtering and sorting are handled by the backend
-export function filterAndSortData(
-  data: IncomeStatement[],
-  filters: FilterParams,
-  sort: SortParams
-): IncomeStatement[] {
-  return data;
-}

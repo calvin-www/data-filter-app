@@ -18,6 +18,13 @@ interface DataTableProps {
   onSort: (field: string) => void;
 }
 
+interface SortButtonProps {
+  field: string;
+  currentField: string;
+  direction: 'asc' | 'desc';
+  onClick: (field: string) => void;
+}
+
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -27,7 +34,7 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
-const SortButton = ({ field, currentField, direction, onClick }: any) => {
+const SortButton = ({ field, currentField, direction, onClick }: SortButtonProps) => {
   const isActive = field === currentField;
   return (
     <Button

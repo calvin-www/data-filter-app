@@ -107,26 +107,22 @@ export default function Home() {
         )}
       </div>
 
-      {isLoading ? (
-        <div>Loading...</div>
+      {viewMode === 'table' ? (
+        <DataTable
+          data={incomeData || []}
+          isLoading={isLoading}
+          sortField={sort.field}
+          sortDirection={sort.direction}
+          onSort={handleSort}
+        />
       ) : (
-        viewMode === 'table' ? (
-          <DataTable
-            data={incomeData || []}
-            isLoading={isLoading}
-            sortField={sort.field}
-            sortDirection={sort.direction}
-            onSort={handleSort}
-          />
-        ) : (
-          <CardView
-            data={incomeData || []}
-            isLoading={isLoading}
-            sortField={sort.field}
-            sortDirection={sort.direction}
-            onSort={handleSort}
-          />
-        )
+        <CardView
+          data={incomeData || []}
+          isLoading={isLoading}
+          sortField={sort.field}
+          sortDirection={sort.direction}
+          onSort={handleSort}
+        />
       )}
     </main>
   );

@@ -134,7 +134,4 @@ async def get_income_statements(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Create handler for AWS Lambda / Vercel
-handler = Mangum(app)
-# Make handler available for import
-__all__ = ['handler']
+handler = Mangum(app, lifespan="off")

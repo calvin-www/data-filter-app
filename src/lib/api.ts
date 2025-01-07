@@ -23,21 +23,43 @@ export async function fetchIncomeStatements(
     params.append('sort_direction', sort.direction);
   }
 
-  const response = await fetch(`${API_URL}/income-statements?${params.toString()}`);
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to fetch income statements: ${error}`);
+  console.log('Making API request to:', `${API_URL}/income-statements?${params.toString()}`);
+  try {
+    const response = await fetch(`${API_URL}/income-statements?${params.toString()}`);
+    console.log('API Response status:', response.status);
+    
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('API Error:', error);
+      throw new Error(`Failed to fetch income statements: ${error}`);
+    }
+    
+    const data = await response.json();
+    console.log('API Response data:', data);
+    return data;
+  } catch (error) {
+    console.error('API Request failed:', error);
+    throw error;
   }
-
-  return response.json();
 }
 
 export async function testApi() {
-  const response = await fetch(`${API_URL}/test`);
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`API test failed: ${error}`);
+  console.log('Making API request to:', `${API_URL}/test`);
+  try {
+    const response = await fetch(`${API_URL}/test`);
+    console.log('API Response status:', response.status);
+    
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('API Error:', error);
+      throw new Error(`API test failed: ${error}`);
+    }
+    
+    const data = await response.json();
+    console.log('API Response data:', data);
+    return data;
+  } catch (error) {
+    console.error('API Request failed:', error);
+    throw error;
   }
-  return response.json();
 }

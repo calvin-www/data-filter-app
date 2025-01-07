@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
@@ -14,7 +14,12 @@ app.add_middleware(
 )
 
 @app.get("/api/test")
-async def test_endpoint():
-    return {"message": "API is working!"}
+async def test_endpoint(request: Request):
+    return {
+        "message": "API is working!",
+        "method": request.method,
+        "url": str(request.url)
+    }
 
-handler = Mangum(app)
+# Handler for Vercel serverless
+handler = Mangum(app, lifespan="off")

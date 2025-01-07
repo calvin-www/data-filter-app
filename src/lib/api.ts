@@ -1,7 +1,7 @@
 import { IncomeStatement, FilterParams, SortParams } from '@/types/financial';
 
 // Use relative URL in production, full URL in development
-const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:8000/api';
+const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000/api';
 
 export async function fetchIncomeStatements(
   filters?: FilterParams,
@@ -55,7 +55,13 @@ export async function testApi() {
       throw new Error(`API test failed: ${error}`);
     }
     
-    const data = await response.json();
+    const text = await response.text();
+    console.log('API Response text:', text);
+    
+    // Convert Python string representation to JSON
+    const cleanedText = text.replace(/'/g, '"');
+    const data = JSON.parse(cleanedText);
+    
     console.log('API Response data:', data);
     return data;
   } catch (error) {

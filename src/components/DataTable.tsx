@@ -15,16 +15,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface DataTableProps {
   data: IncomeStatement[];
   isLoading?: boolean;
-  sortField: string;
+  sortField: 'date' | 'revenue' | 'netIncome';
   sortDirection: 'asc' | 'desc';
-  onSort: (field: string) => void;
+  onSort: (field: 'date' | 'revenue' | 'netIncome') => void;
 }
 
 interface SortButtonProps {
-  field: string;
+  field: 'date' | 'revenue' | 'netIncome';
   currentField: string;
   direction: 'asc' | 'desc';
-  onClick: (field: string) => void;
+  onClick: (field: 'date' | 'revenue' | 'netIncome') => void;
 }
 
 function formatCurrency(value: number): string {
@@ -61,6 +61,8 @@ const SortButton = ({ field, currentField, direction, onClick }: SortButtonProps
 const TableRowSkeleton = () => (
   <TableRow>
     <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
     <TableCell><Skeleton className="h-4 w-20" /></TableCell>
     <TableCell><Skeleton className="h-4 w-20" /></TableCell>
     <TableCell><Skeleton className="h-4 w-20" /></TableCell>
@@ -112,11 +114,9 @@ export default function DataTable({
                 />
               </div>
             </TableHead>
-            <TableHead>
-              <div className="flex items-center gap-2">
-                Operating Income
-              </div>
-            </TableHead>
+            <TableHead>Gross Profit</TableHead>
+            <TableHead>EPS</TableHead>
+            <TableHead>Operating Income</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -130,6 +130,8 @@ export default function DataTable({
                 <TableCell>{format(new Date(item.date), 'yyyy')}</TableCell>
                 <TableCell>{formatCurrency(item.revenue)}</TableCell>
                 <TableCell>{formatCurrency(item.netIncome)}</TableCell>
+                <TableCell>{formatCurrency(item.grossProfit)}</TableCell>
+                <TableCell>{item.eps.toFixed(2)}</TableCell>
                 <TableCell>{formatCurrency(item.operatingIncome)}</TableCell>
               </TableRow>
             ))

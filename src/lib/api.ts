@@ -32,8 +32,10 @@ export async function fetchIncomeStatements(
   if (filters) {
     if (filters.startYear) params.append('start_year', filters.startYear.toString());
     if (filters.endYear) params.append('end_year', filters.endYear.toString());
+    
     if (filters.minRevenue) params.append('min_revenue', filters.minRevenue.toString());
     if (filters.maxRevenue) params.append('max_revenue', filters.maxRevenue.toString());
+    
     if (filters.minNetIncome) params.append('min_net_income', filters.minNetIncome.toString());
     if (filters.maxNetIncome) params.append('max_net_income', filters.maxNetIncome.toString());
   }

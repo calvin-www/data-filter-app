@@ -3,7 +3,11 @@
   "builds": [
     {
       "src": "backend/api/index.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.9",
+        "requirementsPath": "backend/api/requirements.txt"
+      }
     },
     {
       "src": "package.json",

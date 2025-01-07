@@ -47,7 +47,7 @@ const sortOptions = [
 
 export default function CardView({ data, sortField = 'date', sortDirection = 'desc', onSort }: CardViewProps) {
   const handleSortChange = (value: string) => {
-    const [field, direction] = value.split('-');
+    const field = value.split('-')[0];
     if (onSort) {
       onSort(field);
     }

@@ -3,6 +3,26 @@ import { IncomeStatement, FilterParams, SortParams } from '@/types/financial';
 // Use relative URL in production, full URL in development
 const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000/api';
 
+const apiClient = async (endpoint: string, params?: URLSearchParams) => {
+  try {
+    const response = await fetch(`${API_URL}/${endpoint}?${params?.toString()}`);
+    console.log('API Response status:', response.status);
+    
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('API Error:', error);
+      throw new Error(`API request failed: ${error}`);
+    }
+    
+    const data = await response.json();
+    console.log('API Response data:', data);
+    return data;
+  } catch (error) {
+    console.error('API Request failed:', error);
+    throw error;
+  }
+};
+
 export async function fetchIncomeStatements(
   filters?: FilterParams,
   sort?: SortParams
@@ -24,37 +44,13 @@ export async function fetchIncomeStatements(
   }
 
   console.log('Making API request to:', `${API_URL}/income-statements?${params.toString()}`);
-  try {
-    const response = await fetch(`${API_URL}/income-statements?${params.toString()}`);
-    console.log('API Response status:', response.status);
-    
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('API Error:', error);
-      throw new Error(`Failed to fetch income statements: ${error}`);
-    }
-    
-    const data = await response.json();
-    console.log('API Response data:', data);
-    return data;
-  } catch (error) {
-    console.error('API Request failed:', error);
-    throw error;
-  }
+  return apiClient('income-statements', params);
 }
 
 export async function testApi() {
   console.log('Making API request to:', `${API_URL}/test`);
   try {
-    const response = await fetch(`${API_URL}/test`);
-    console.log('API Response status:', response.status);
-    
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('API Error:', error);
-      throw new Error(`API test failed: ${error}`);
-    }
-    
+    const response = await apiClient('test');
     const text = await response.text();
     console.log('API Response text:', text);
     

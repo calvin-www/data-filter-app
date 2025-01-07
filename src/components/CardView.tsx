@@ -43,7 +43,7 @@ export default function CardView({ data, sortField = 'date', sortDirection = 'de
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
         <Select
           value={`${sortField}-${sortDirection}`}
           onValueChange={handleSortChange}

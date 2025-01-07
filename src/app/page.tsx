@@ -38,6 +38,9 @@ export default function Home() {
   const { data: incomeData, isLoading, isError } = useQuery({
     queryKey: ['incomeStatements', filters, sort],
     queryFn: () => fetchIncomeStatements(filters, sort),
+    staleTime: 5 * 60 * 1000, // Keep data fresh for 5 minutes
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    retry: 1, // Only retry once on failure
   });
 
   const handleFilterChange = (newFilters: FilterParams) => {

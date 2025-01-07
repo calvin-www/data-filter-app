@@ -36,6 +36,7 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
     formatValue(value[0]),
     formatValue(value[1])
   ]);
+  const [isEditing, setIsEditing] = React.useState<boolean>(false);
   const trackRef = React.useRef<HTMLDivElement>(null);
 
   const getPercentage = (value: number) => {
@@ -110,33 +111,32 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
   }, [isDragging, handleMove]);
 
   React.useEffect(() => {
-    if (!isDragging) {
+    if (!isEditing) {
       setInputValues([formatValue(value[0]), formatValue(value[1])]);
     }
-  }, [value, formatValue, isDragging]);
+  }, [value, formatValue, isEditing]);
 
   const handleInputChange = (inputValue: string, index: number) => {
     const newInputValues = [...inputValues] as [string, string];
     newInputValues[index] = inputValue;
     setInputValues(newInputValues);
-
-    const parsed = parseValue(inputValue);
-    if (!isNaN(parsed)) {
-      const clamped = Math.max(min, Math.min(max, parsed));
-      const newValue = [...value];
-      newValue[index] = clamped;
-
-      // Ensure min thumb doesn't exceed max thumb and vice versa
-      if (index === 0 && clamped <= value[1]) {
-        onValueChange([clamped, value[1]]);
-      } else if (index === 1 && clamped >= value[0]) {
-        onValueChange([value[0], clamped]);
-      }
-    }
   };
 
   const handleInputBlur = () => {
-    // If the input is invalid, reset it to the current value
+    setIsEditing(false);
+    const [value0, value1] = inputValues;
+    const parsed0 = parseValue(value0);
+    const parsed1 = parseValue(value1);
+
+    if (!isNaN(parsed0) && !isNaN(parsed1)) {
+      const clamped0 = Math.max(min, Math.min(max, parsed0));
+      const clamped1 = Math.max(min, Math.min(max, parsed1));
+
+      if (clamped0 <= clamped1) {
+        onValueChange([clamped0, clamped1]);
+      }
+    }
+    // Reset input values if invalid
     setInputValues([formatValue(value[0]), formatValue(value[1])]);
   };
 
@@ -165,6 +165,7 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
               type="text"
               value={inputValues[0]}
               onChange={(e) => handleInputChange(e.target.value, 0)}
+              onFocus={() => setIsEditing(true)}
               onBlur={handleInputBlur}
               onKeyDown={handleInputKeyDown}
               className="w-24 h-8"
@@ -174,6 +175,7 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
               type="text"
               value={inputValues[1]}
               onChange={(e) => handleInputChange(e.target.value, 1)}
+              onFocus={() => setIsEditing(true)}
               onBlur={handleInputBlur}
               onKeyDown={handleInputKeyDown}
               className="w-24 h-8"

@@ -112,13 +112,19 @@ const RangeSlider = React.forwardRef<
           </SliderPrimitive.Track>
           {showMarks && (
             <div className="absolute w-full top-2">
-              {marks.map((mark, index) => (
-                <div
-                  key={mark}
-                  className="absolute w-0.5 h-1.5 bg-primary/50 -translate-x-1/2"
-                  style={{ left: `${(index / markCount) * 100}%` }}
-                />
-              ))}
+              {marks.map((mark, index) => {
+                // Calculate position accounting for thumb width
+                const thumbWidth = 16; // width of thumb in pixels
+                const totalWidth = 100;
+                const adjustedPosition = (index / markCount) * (totalWidth - (thumbWidth / totalWidth) * 100);
+                return (
+                  <div
+                    key={mark}
+                    className="absolute w-0.5 h-1.5 bg-primary/50 -translate-x-1/2"
+                    style={{ left: `${adjustedPosition}%` }}
+                  />
+                );
+              })}
             </div>
           )}
           <SliderPrimitive.Thumb className="block h-4 w-4 rounded-full border border-primary/50 bg-background shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50" />

@@ -40,8 +40,9 @@ export default function Home() {
 
   return (
     <main className="container mx-auto py-10">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-bold">Financial Data</h1>
+      <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
+
+      <div className="flex justify-end mb-6">
         <div className="flex gap-2">
           <Button
             variant={viewMode === 'table' ? 'default' : 'outline'}
@@ -61,8 +62,6 @@ export default function Home() {
           </Button>
         </div>
       </div>
-
-      <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
 
       {isLoading ? (
         <div>Loading...</div>

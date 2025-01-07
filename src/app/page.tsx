@@ -9,8 +9,7 @@ import DataTable from '@/components/DataTable';
 import CardView from '@/components/CardView';
 import { Button } from '@/components/ui/button';
 import { TableIcon, LayoutGridIcon } from 'lucide-react';
-import { Select } from '@/components/ui/select';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 export default function Home() {
   const [filters, setFilters] = useState<FilterParams>({});
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table');

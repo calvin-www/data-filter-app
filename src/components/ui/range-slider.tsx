@@ -48,13 +48,13 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
     return Math.min(max, Math.max(min, steppedValue));
   };
 
-  const getValueFromEvent = (event: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent) => {
+  const getValueFromEvent = React.useCallback((event: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent) => {
     if (!trackRef.current) return null;
     const rect = trackRef.current.getBoundingClientRect();
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
     const percentage = ((clientX - rect.left) / rect.width) * 100;
     return getValue(percentage);
-  };
+  }, [trackRef, getValue]);
 
   const handleTrackInteraction = (event: React.MouseEvent | React.TouchEvent) => {
     const newValue = getValueFromEvent(event);
@@ -71,7 +71,7 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
     }
   };
 
-  const handleMove = (event: MouseEvent | TouchEvent) => {
+  const handleMove = React.useCallback((event: MouseEvent | TouchEvent) => {
     if (isDragging === null) return;
     
     const newValue = getValueFromEvent(event);
@@ -82,7 +82,7 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
     } else {
       onValueChange([value[0], Math.max(value[0], newValue)]);
     }
-  };
+  }, [isDragging, value, getValueFromEvent, onValueChange]);
 
   const handleMoveEnd = () => {
     setIsDragging(null);
@@ -107,7 +107,7 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
         window.removeEventListener('touchend', handleMoveEnd);
       };
     }
-  }, [isDragging, value]);
+  }, [isDragging, handleMove]);
 
   React.useEffect(() => {
     if (!isDragging) {
@@ -115,7 +115,7 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
     }
   }, [value, formatValue, isDragging]);
 
-  const handleInputChange = (index: number, inputValue: string) => {
+  const handleInputChange = (inputValue: string, index: number) => {
     const newInputValues = [...inputValues] as [string, string];
     newInputValues[index] = inputValue;
     setInputValues(newInputValues);
@@ -135,12 +135,12 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
     }
   };
 
-  const handleInputBlur = (index: number) => {
+  const handleInputBlur = () => {
     // If the input is invalid, reset it to the current value
     setInputValues([formatValue(value[0]), formatValue(value[1])]);
   };
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
@@ -164,18 +164,18 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
             <Input
               type="text"
               value={inputValues[0]}
-              onChange={(e) => handleInputChange(0, e.target.value)}
-              onBlur={() => handleInputBlur(0)}
-              onKeyDown={(e) => handleInputKeyDown(e, 0)}
+              onChange={(e) => handleInputChange(e.target.value, 0)}
+              onBlur={handleInputBlur}
+              onKeyDown={handleInputKeyDown}
               className="w-24 h-8"
             />
             <span>-</span>
             <Input
               type="text"
               value={inputValues[1]}
-              onChange={(e) => handleInputChange(1, e.target.value)}
-              onBlur={() => handleInputBlur(1)}
-              onKeyDown={(e) => handleInputKeyDown(e, 1)}
+              onChange={(e) => handleInputChange(e.target.value, 1)}
+              onBlur={handleInputBlur}
+              onKeyDown={handleInputKeyDown}
               className="w-24 h-8"
             />
           </div>

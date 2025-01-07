@@ -81,26 +81,23 @@ export default function Home() {
           <Select
             value={`${sortParams.field}-${sortParams.direction}`}
             onValueChange={(value) => {
-              const [field] = value.split('-');
-              handleSort(field as 'date' | 'revenue' | 'netIncome');
+              const [field, direction] = value.split('-');
+              setSortParams({
+                field: field as 'date' | 'revenue' | 'netIncome',
+                direction: direction as 'asc' | 'desc'
+              });
             }}
           >
             <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Sort by..." />
             </SelectTrigger>
             <SelectContent>
-              {[
-                { label: 'Date (Newest)', value: 'date-desc' },
-                { label: 'Date (Oldest)', value: 'date-asc' },
-                { label: 'Revenue (Highest)', value: 'revenue-desc' },
-                { label: 'Revenue (Lowest)', value: 'revenue-asc' },
-                { label: 'Net Income (Highest)', value: 'netIncome-desc' },
-                { label: 'Net Income (Lowest)', value: 'netIncome-asc' },
-              ].map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
+              <SelectItem value="date-desc">Date (Newest)</SelectItem>
+              <SelectItem value="date-asc">Date (Oldest)</SelectItem>
+              <SelectItem value="revenue-desc">Revenue (Highest)</SelectItem>
+              <SelectItem value="revenue-asc">Revenue (Lowest)</SelectItem>
+              <SelectItem value="netIncome-desc">Net Income (Highest)</SelectItem>
+              <SelectItem value="netIncome-asc">Net Income (Lowest)</SelectItem>
             </SelectContent>
           </Select>
         )}
@@ -124,7 +121,6 @@ export default function Home() {
           isLoading={isLoading} 
           sortField={sortParams.field}
           sortDirection={sortParams.direction}
-          onSort={handleSort}
         />
       )}
     </main>

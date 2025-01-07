@@ -1,13 +1,12 @@
 import { IncomeStatement } from '@/types/financial';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface CardViewProps {
   data: IncomeStatement[];
   isLoading?: boolean;
   sortField?: 'date' | 'revenue' | 'netIncome';
   sortDirection?: 'asc' | 'desc';
-  onSort?: (field: 'date' | 'revenue' | 'netIncome') => void;
 }
 
 function formatCurrency(value: number): string {
@@ -23,36 +22,29 @@ function formatDate(date: string): string {
   return new Date(date).getFullYear().toString();
 }
 
-const CardSkeleton = () => (
-  <Card className="hover:shadow-lg transition-shadow">
-    <CardHeader>
-      <CardTitle className="flex items-center justify-between">
-        <Skeleton className="h-6 w-3/4" />
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-2">
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-full" />
-    </CardContent>
-  </Card>
-);
-
 export default function CardView({ 
   data, 
   isLoading, 
   sortField, 
-  sortDirection, 
-  onSort 
+  sortDirection 
 }: CardViewProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, index) => (
-          <CardSkeleton key={index} />
+          <Card key={index}>
+            <CardHeader>
+              <Skeleton className="h-6 w-3/4" />
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+            </CardContent>
+          </Card>
         ))}
       </div>
     );
@@ -91,8 +83,7 @@ export default function CardView({
       {sortedData.map((item) => (
         <Card key={item.date} className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>{item.symbol}</span>
+            <CardTitle>
               <span className="text-lg">{formatDate(item.date)}</span>
             </CardTitle>
           </CardHeader>

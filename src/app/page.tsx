@@ -35,57 +35,55 @@ export default function Home() {
   };
 
   if (isError) {
-    return <div>Error loading data</div>;
+    return <div className="container max-w-7xl mx-auto px-4">Error loading data</div>;
   }
 
   return (
-    <main className="mx-auto py-10">
-      <div className="container max-w-7xl px-4">
-        <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
+    <main className="container max-w-7xl mx-auto px-4 py-10">
+      <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
 
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === 'table' ? 'default' : 'outline'}
-              onClick={() => setViewMode('table')}
-              className="gap-2"
-            >
-              <TableIcon className="h-4 w-4" />
-              Table
-            </Button>
-            <Button
-              variant={viewMode === 'card' ? 'default' : 'outline'}
-              onClick={() => setViewMode('card')}
-              className="gap-2"
-            >
-              <LayoutGridIcon className="h-4 w-4" />
-              Cards
-            </Button>
-          </div>
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex gap-2">
+          <Button
+            variant={viewMode === 'table' ? 'default' : 'outline'}
+            onClick={() => setViewMode('table')}
+            className="gap-2"
+          >
+            <TableIcon className="h-4 w-4" />
+            Table
+          </Button>
+          <Button
+            variant={viewMode === 'card' ? 'default' : 'outline'}
+            onClick={() => setViewMode('card')}
+            className="gap-2"
+          >
+            <LayoutGridIcon className="h-4 w-4" />
+            Cards
+          </Button>
         </div>
+      </div>
 
-        {isLoading ? (
-          <div>Loading...</div>
-        ) : (
-          viewMode === 'table' ? (
-            <div className="rounded-lg border bg-card">
-              <DataTable 
-                data={incomeData || []}
-                sortField={sort.field}
-                sortDirection={sort.direction}
-                onSort={handleSort}
-              />
-            </div>
-          ) : (
-            <CardView 
-              data={incomeData || []} 
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        viewMode === 'table' ? (
+          <div className="rounded-lg border bg-card">
+            <DataTable 
+              data={incomeData || []}
               sortField={sort.field}
               sortDirection={sort.direction}
               onSort={handleSort}
             />
-          )
-        )}
-      </div>
+          </div>
+        ) : (
+          <CardView 
+            data={incomeData || []} 
+            sortField={sort.field}
+            sortDirection={sort.direction}
+            onSort={handleSort}
+          />
+        )
+      )}
     </main>
   );
 }

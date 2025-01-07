@@ -8,12 +8,6 @@
 }
 
 @layer base {
-  * {
-    @apply transition-colors duration-100;
-  }
-}
-
-@layer base {
   :root {
     /* Light mode: Cream colors */
     --background: 39 70% 95%;

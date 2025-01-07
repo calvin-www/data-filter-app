@@ -2,6 +2,10 @@
 
 A web application for filtering and analyzing Apple Inc.'s financial data using the Financial Modeling Prep API.
 
+## Live Demo
+
+Visit the live application at: [https://data-filter-app.vercel.app](https://data-filter-app.vercel.app)
+
 ## Features
 
 - Display annual income statements in a responsive table

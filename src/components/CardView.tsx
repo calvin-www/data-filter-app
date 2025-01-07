@@ -49,10 +49,6 @@ export default function CardView({ data, sortField = 'date', sortDirection = 'de
   const handleSortChange = (value: string) => {
     const [field, direction] = value.split('-');
     if (onSort) {
-      // Toggle direction if clicking the same field
-      const newDirection = field === sortField && direction === sortDirection ? 
-        (direction === 'asc' ? 'desc' : 'asc') : 
-        direction;
       onSort(field);
     }
   };

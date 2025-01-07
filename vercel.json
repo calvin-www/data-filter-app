@@ -12,10 +12,6 @@
   ],
   "rewrites": [
     {
-      "source": "/api/test",
-      "destination": "/api/test.py"
-    },
-    {
       "source": "/api/income-statements",
       "destination": "/api/income-statements.py"
     }

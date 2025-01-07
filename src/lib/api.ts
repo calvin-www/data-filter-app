@@ -1,7 +1,7 @@
 import { IncomeStatement, FilterParams, SortParams } from '@/types/financial';
 
 // Use relative URL in production, full URL in development
-const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000/api';
+const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:8080/api';
 
 const apiClient = async (endpoint: string, params?: URLSearchParams) => {
   try {
@@ -45,23 +45,4 @@ export async function fetchIncomeStatements(
 
   console.log('Making API request to:', `${API_URL}/income-statements?${params.toString()}`);
   return apiClient('income-statements', params);
-}
-
-export async function testApi() {
-  console.log('Making API request to:', `${API_URL}/test`);
-  try {
-    const response = await apiClient('test');
-    const text = await response.text();
-    console.log('API Response text:', text);
-    
-    // Convert Python string representation to JSON
-    const cleanedText = text.replace(/'/g, '"');
-    const data = JSON.parse(cleanedText);
-    
-    console.log('API Response data:', data);
-    return data;
-  } catch (error) {
-    console.error('API Request failed:', error);
-    throw error;
-  }
 }

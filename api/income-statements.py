@@ -1,3 +1,25 @@
+"""
+Income Statements API endpoint for fetching and filtering financial data.
+
+This endpoint fetches income statement data from the Financial Modeling Prep API
+and provides filtering and sorting capabilities. It requires an FMP_API_KEY
+environment variable to be set.
+
+Query Parameters:
+    start_year (int): Filter by start year (inclusive)
+    end_year (int): Filter by end year (inclusive)
+    min_revenue (float): Minimum revenue filter
+    max_revenue (float): Maximum revenue filter
+    min_net_income (float): Minimum net income filter
+    max_net_income (float): Maximum net income filter
+    sort_field (str): Field to sort by (default: 'date')
+    sort_direction (str): Sort direction ('asc' or 'desc', default: 'desc')
+
+Returns:
+    JSON response containing filtered and sorted income statement data
+    or an error message if something goes wrong.
+"""
+
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
 import json
@@ -6,6 +28,16 @@ import requests
 from datetime import datetime
 
 def get_income_statements(params):
+    """
+    Fetch and process income statement data based on query parameters.
+    
+    Args:
+        params (dict): Dictionary of query parameters for filtering and sorting
+        
+    Returns:
+        tuple: (data, status_code) where data is the processed response data
+        and status_code is the HTTP status code
+    """
     api_key = os.environ.get("FMP_API_KEY")
     if not api_key:
         return {"error": "API key not configured"}, 500
@@ -19,7 +51,7 @@ def get_income_statements(params):
     
     try:
         response = requests.get(base_url, params=fmp_params)
-        response.raise_for_status()  # Raise an exception for bad status codes
+        response.raise_for_status()
     except requests.RequestException as e:
         return {"error": f"Failed to fetch data from FMP API: {str(e)}"}, 500
 
@@ -28,10 +60,11 @@ def get_income_statements(params):
     except json.JSONDecodeError:
         return {"error": "Invalid JSON response from FMP API"}, 500
     
-    # Apply filters
-    filtered_data = data
-    
     try:
+        # Apply filters
+        filtered_data = data
+        
+        # Year filters
         if 'start_year' in params:
             start_year = int(params['start_year'][0])
             filtered_data = [item for item in filtered_data 
@@ -42,6 +75,7 @@ def get_income_statements(params):
             filtered_data = [item for item in filtered_data 
                            if int(datetime.strptime(item['date'], "%Y-%m-%d").year) <= end_year]
         
+        # Revenue filters
         if 'min_revenue' in params:
             min_revenue = float(params['min_revenue'][0])
             filtered_data = [item for item in filtered_data if item['revenue'] >= min_revenue]
@@ -50,6 +84,7 @@ def get_income_statements(params):
             max_revenue = float(params['max_revenue'][0])
             filtered_data = [item for item in filtered_data if item['revenue'] <= max_revenue]
         
+        # Net income filters
         if 'min_net_income' in params:
             min_net_income = float(params['min_net_income'][0])
             filtered_data = [item for item in filtered_data if item['netIncome'] >= min_net_income]
@@ -83,7 +118,10 @@ def get_income_statements(params):
     return formatted_data, 200
 
 class handler(BaseHTTPRequestHandler):
+    """Vercel serverless function handler for the income statements endpoint."""
+    
     def do_GET(self):
+        """Handle GET requests by returning filtered and sorted income statement data."""
         # Parse query parameters
         query_components = parse_qs(urlparse(self.path).query)
         
@@ -101,6 +139,7 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(data).encode())
 
     def do_OPTIONS(self):
+        """Handle OPTIONS requests for CORS preflight."""
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')

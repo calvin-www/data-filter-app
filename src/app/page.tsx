@@ -9,6 +9,7 @@ import DataTable from '@/components/DataTable';
 import CardView from '@/components/CardView';
 import { Button } from '@/components/ui/button';
 import { TableIcon, LayoutGridIcon } from 'lucide-react';
+import { Select } from '@/components/ui/select';
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterParams>({});
@@ -61,6 +62,33 @@ export default function Home() {
             Cards
           </Button>
         </div>
+        {viewMode === 'card' && (
+          <Select
+            value={`${sort.field}-${sort.direction}`}
+            onValueChange={(value) => {
+              const field = value.split('-')[0];
+              handleSort(field);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by..." />
+            </SelectTrigger>
+            <SelectContent>
+              {[
+                { label: 'Date (Newest)', value: 'date-desc' },
+                { label: 'Date (Oldest)', value: 'date-asc' },
+                { label: 'Revenue (Highest)', value: 'revenue-desc' },
+                { label: 'Revenue (Lowest)', value: 'revenue-asc' },
+                { label: 'Net Income (Highest)', value: 'netIncome-desc' },
+                { label: 'Net Income (Lowest)', value: 'netIncome-asc' },
+              ].map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {isLoading ? (

@@ -113,10 +113,11 @@ const RangeSlider = React.forwardRef<
           {showMarks && (
             <div className="absolute w-full top-2">
               {marks.map((mark, index) => {
-                // Calculate position with proper thumb offset
-                const thumbOffset = 8; // half of thumb width (16px)
-                const trackWidth = 100;
-                const position = `calc(${(index / markCount) * trackWidth}% - ${thumbOffset}px)`;
+                // Calculate position with proper thumb offset and track padding
+                const thumbWidth = 16; // width of thumb in pixels
+                const trackPadding = thumbWidth / 2;
+                const availableWidth = 100 - (thumbWidth / 5); // Adjust for thumb width percentage
+                const position = `calc(${(index / markCount) * availableWidth}% + ${trackPadding}px)`;
                 return (
                   <div
                     key={mark}

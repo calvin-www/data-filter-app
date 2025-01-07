@@ -32,10 +32,11 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
   className,
 }, ref) => {
   const [isDragging, setIsDragging] = React.useState<number | null>(null);
-  const [localValue, setLocalValue] = React.useState<[string, string]>([
+  const [inputValues, setInputValues] = React.useState<[string, string]>([
     formatValue(value[0]),
     formatValue(value[1])
   ]);
+  const [isEditing, setIsEditing] = React.useState<boolean>(false);
   const trackRef = React.useRef<HTMLDivElement>(null);
 
   const getPercentage = (value: number) => {
@@ -48,12 +49,17 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
     return Math.min(max, Math.max(min, steppedValue));
   };
 
-  const handleTrackClick = (event: React.MouseEvent) => {
-    if (!trackRef.current) return;
-    
+  const getValueFromEvent = (event: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent) => {
+    if (!trackRef.current) return null;
     const rect = trackRef.current.getBoundingClientRect();
-    const percentage = ((event.clientX - rect.left) / rect.width) * 100;
-    const newValue = getValue(percentage);
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const percentage = ((clientX - rect.left) / rect.width) * 100;
+    return getValue(percentage);
+  };
+
+  const handleTrackInteraction = (event: React.MouseEvent | React.TouchEvent) => {
+    const newValue = getValueFromEvent(event);
+    if (newValue === null) return;
     
     // Find closest thumb
     const thumb0Distance = Math.abs(value[0] - newValue);
@@ -66,12 +72,11 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
     }
   };
 
-  const handleMouseMove = (event: MouseEvent) => {
-    if (isDragging === null || !trackRef.current) return;
+  const handleMove = (event: MouseEvent | TouchEvent) => {
+    if (isDragging === null) return;
     
-    const rect = trackRef.current.getBoundingClientRect();
-    const percentage = ((event.clientX - rect.left) / rect.width) * 100;
-    const newValue = getValue(percentage);
+    const newValue = getValueFromEvent(event);
+    if (newValue === null) return;
     
     if (isDragging === 0) {
       onValueChange([Math.min(newValue, value[1]), value[1]]);
@@ -80,36 +85,57 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMoveEnd = () => {
     setIsDragging(null);
   };
 
   React.useEffect(() => {
     if (isDragging !== null) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      const handleTouchMove = (e: TouchEvent) => {
+        e.preventDefault(); // Prevent scrolling while dragging
+        handleMove(e);
+      };
+      
+      window.addEventListener('mousemove', handleMove);
+      window.addEventListener('mouseup', handleMoveEnd);
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleMoveEnd);
+      
       return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', handleMove);
+        window.removeEventListener('mouseup', handleMoveEnd);
+        window.removeEventListener('touchmove', handleTouchMove);
+        window.removeEventListener('touchend', handleMoveEnd);
       };
     }
   }, [isDragging, value]);
 
   React.useEffect(() => {
-    setLocalValue([formatValue(value[0]), formatValue(value[1])]);
-  }, [value, formatValue]);
+    if (!isEditing) {
+      setInputValues([formatValue(value[0]), formatValue(value[1])]);
+    }
+  }, [value, formatValue, isEditing]);
 
   const handleInputChange = (index: number, inputValue: string) => {
-    const newLocalValue = [...localValue] as [string, string];
-    newLocalValue[index] = inputValue;
-    setLocalValue(newLocalValue);
+    const newInputValues = [...inputValues] as [string, string];
+    newInputValues[index] = inputValue;
+    setInputValues(newInputValues);
+  };
 
-    const parsed = parseValue(inputValue);
+  const handleInputBlur = (index: number) => {
+    setIsEditing(false);
+    const parsed = parseValue(inputValues[index]);
     if (!isNaN(parsed)) {
       const clamped = Math.max(min, Math.min(max, parsed));
       const newValue = [...value];
       newValue[index] = clamped;
       onValueChange(newValue);
+    }
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Enter') {
+      handleInputBlur(index);
     }
   };
 
@@ -130,26 +156,33 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
           <div className="flex items-center gap-2">
             <Input
               type="text"
-              value={localValue[0]}
+              value={inputValues[0]}
               onChange={(e) => handleInputChange(0, e.target.value)}
+              onFocus={() => setIsEditing(true)}
+              onBlur={() => handleInputBlur(0)}
+              onKeyDown={(e) => handleInputKeyDown(e, 0)}
               className="w-24 h-8"
             />
             <span>-</span>
             <Input
               type="text"
-              value={localValue[1]}
+              value={inputValues[1]}
               onChange={(e) => handleInputChange(1, e.target.value)}
+              onFocus={() => setIsEditing(true)}
+              onBlur={() => handleInputBlur(1)}
+              onKeyDown={(e) => handleInputKeyDown(e, 1)}
               className="w-24 h-8"
             />
           </div>
         </div>
       )}
 
-      <div className="relative h-10 flex items-center">
+      <div className="relative h-10 flex items-center touch-none">
         <div
           ref={trackRef}
           className="relative h-1.5 w-full rounded-full bg-primary/20 cursor-pointer"
-          onClick={handleTrackClick}
+          onClick={handleTrackInteraction}
+          onTouchStart={handleTrackInteraction}
         >
           <div
             className="absolute h-full bg-primary rounded-full"
@@ -177,11 +210,19 @@ const RangeSlider = React.forwardRef<HTMLDivElement, RangeSliderProps>(({
           className="absolute w-4 h-4 -ml-2 rounded-full bg-background border border-primary/50 shadow cursor-grab active:cursor-grabbing"
           style={{ left: `${getPercentage(value[0])}%` }}
           onMouseDown={() => setIsDragging(0)}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            setIsDragging(0);
+          }}
         />
         <div
           className="absolute w-4 h-4 -ml-2 rounded-full bg-background border border-primary/50 shadow cursor-grab active:cursor-grabbing"
           style={{ left: `${getPercentage(value[1])}%` }}
           onMouseDown={() => setIsDragging(1)}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            setIsDragging(1);
+          }}
         />
       </div>
     </div>

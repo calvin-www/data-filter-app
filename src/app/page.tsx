@@ -82,7 +82,7 @@ export default function Home() {
           <Select
             value={`${sort.field}-${sort.direction}`}
             onValueChange={(value) => {
-              const field = value.split('-')[0];
+              const [field] = value.split('-');
               handleSort(field);
             }}
           >
@@ -111,17 +111,17 @@ export default function Home() {
         <div>Loading...</div>
       ) : (
         viewMode === 'table' ? (
-          <div className="rounded-lg border bg-card">
-            <DataTable 
-              data={incomeData || []}
-              sortField={sort.field}
-              sortDirection={sort.direction}
-              onSort={handleSort}
-            />
-          </div>
+          <DataTable
+            data={incomeData || []}
+            isLoading={isLoading}
+            sortField={sort.field}
+            sortDirection={sort.direction}
+            onSort={handleSort}
+          />
         ) : (
-          <CardView 
-            data={incomeData || []} 
+          <CardView
+            data={incomeData || []}
+            isLoading={isLoading}
             sortField={sort.field}
             sortDirection={sort.direction}
             onSort={handleSort}

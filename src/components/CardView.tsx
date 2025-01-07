@@ -1,8 +1,10 @@
 import { IncomeStatement } from '@/types/financial';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CardViewProps {
   data: IncomeStatement[];
+  isLoading?: boolean;
   sortField?: string;
   sortDirection?: 'asc' | 'desc';
   onSort?: (field: string) => void;
@@ -17,7 +19,42 @@ const formatDate = (date: string) => {
   return new Date(date).getFullYear().toString();
 };
 
-export default function CardView({ data }: CardViewProps) {
+const CardSkeleton = () => (
+  <Card className="hover:shadow-lg transition-shadow">
+    <CardHeader>
+      <CardTitle className="flex items-center justify-between">
+        <Skeleton className="h-6 w-16" />
+        <Skeleton className="h-6 w-12" />
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="space-y-4">
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-4 w-16" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+    </CardContent>
+  </Card>
+);
+
+export default function CardView({ data, isLoading }: CardViewProps) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <CardSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {data.map((item) => (

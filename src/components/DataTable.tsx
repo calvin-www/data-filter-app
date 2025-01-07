@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps {
   data: IncomeStatement[];
+  isLoading?: boolean;
   sortField: string;
   sortDirection: 'asc' | 'desc';
   onSort: (field: string) => void;
@@ -56,8 +58,18 @@ const SortButton = ({ field, currentField, direction, onClick }: SortButtonProps
   );
 };
 
+const TableRowSkeleton = () => (
+  <TableRow>
+    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+  </TableRow>
+);
+
 export default function DataTable({
   data,
+  isLoading,
   sortField,
   sortDirection,
   onSort,
@@ -100,24 +112,28 @@ export default function DataTable({
                 />
               </div>
             </TableHead>
-            <TableHead>Gross Profit</TableHead>
-            <TableHead>EPS</TableHead>
-            <TableHead>Operating Income</TableHead>
+            <TableHead>
+              <div className="flex items-center gap-2">
+                Operating Income
+              </div>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item) => (
-            <TableRow key={item.date}>
-              <TableCell className="font-medium">
-                {format(new Date(item.date), 'yyyy-MM-dd')}
-              </TableCell>
-              <TableCell>{formatCurrency(item.revenue)}</TableCell>
-              <TableCell>{formatCurrency(item.netIncome)}</TableCell>
-              <TableCell>{formatCurrency(item.grossProfit)}</TableCell>
-              <TableCell>{item.eps.toFixed(2)}</TableCell>
-              <TableCell>{formatCurrency(item.operatingIncome)}</TableCell>
-            </TableRow>
-          ))}
+          {isLoading ? (
+            Array.from({ length: 10 }).map((_, index) => (
+              <TableRowSkeleton key={index} />
+            ))
+          ) : (
+            data.map((item) => (
+              <TableRow key={item.date}>
+                <TableCell>{format(new Date(item.date), 'yyyy')}</TableCell>
+                <TableCell>{formatCurrency(item.revenue)}</TableCell>
+                <TableCell>{formatCurrency(item.netIncome)}</TableCell>
+                <TableCell>{formatCurrency(item.operatingIncome)}</TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

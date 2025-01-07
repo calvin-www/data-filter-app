@@ -6,19 +6,19 @@ const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localho
 const apiClient = async (endpoint: string, params?: URLSearchParams) => {
   try {
     const response = await fetch(`${API_URL}/${endpoint}?${params?.toString()}`);
-    console.log('API Response status:', response.status);
+    // console.log('API Response status:', response.status);
     
     if (!response.ok) {
       const error = await response.text();
-      console.error('API Error:', error);
+      // console.error('API Error:', error);
       throw new Error(`API request failed: ${error}`);
     }
     
     const data = await response.json();
-    console.log('API Response data:', data);
+    // console.log('API Response data:', data);
     return data;
   } catch (error) {
-    console.error('API Request failed:', error);
+    // console.error('API Request failed:', error);
     throw error;
   }
 };
@@ -43,6 +43,6 @@ export async function fetchIncomeStatements(
     params.append('sort_direction', sort.direction);
   }
 
-  console.log('Making API request to:', `${API_URL}/income-statements?${params.toString()}`);
+  // console.log('Making API request to:', `${API_URL}/income-statements?${params.toString()}`);
   return apiClient('income-statements', params);
 }

@@ -4,20 +4,28 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { fetchIncomeStatements } from '@/lib/api';
 import { FilterParams, SortParams } from '@/types/financial';
-import DataTable from '@/components/DataTable';
 import FilterPanel from '@/components/FilterPanel';
+import DataTable from '@/components/DataTable';
+import CardView from '@/components/CardView';
+import { Button } from '@/components/ui/button';
+import { TableIcon, LayoutGridIcon } from 'lucide-react';
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterParams>({});
+  const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
   const [sort, setSort] = useState<SortParams>({
     field: 'date',
     direction: 'desc',
   });
 
-  const { data: incomeData, isLoading, error } = useQuery({
+  const { data: incomeData, isLoading, isError } = useQuery({
     queryKey: ['incomeStatements', filters, sort],
     queryFn: () => fetchIncomeStatements(filters, sort),
   });
+
+  const handleFilterChange = (newFilters: FilterParams) => {
+    setFilters(newFilters);
+  };
 
   const handleSort = (field: string) => {
     setSort((prev) => ({
@@ -26,36 +34,57 @@ export default function Home() {
     }));
   };
 
-  return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="space-y-8">
-        <FilterPanel filters={filters} onFilterChange={setFilters} />
-        
-        {isLoading && (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        )}
-        
-        {error && (
-          <div className="text-center py-8">
-            <div className="text-destructive">
-              Error loading data: {(error as Error).message}
-            </div>
-          </div>
-        )}
+  if (isError) {
+    return <div>Error loading data</div>;
+  }
 
-        {incomeData && (
+  return (
+    <main className="container mx-auto py-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-4xl font-bold">Financial Data</h1>
+        <div className="flex gap-2">
+          <Button
+            variant={viewMode === 'table' ? 'default' : 'outline'}
+            onClick={() => setViewMode('table')}
+            className="gap-2"
+          >
+            <TableIcon className="h-4 w-4" />
+            Table
+          </Button>
+          <Button
+            variant={viewMode === 'card' ? 'default' : 'outline'}
+            onClick={() => setViewMode('card')}
+            className="gap-2"
+          >
+            <LayoutGridIcon className="h-4 w-4" />
+            Cards
+          </Button>
+        </div>
+      </div>
+
+      <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
+
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        viewMode === 'table' ? (
           <div className="rounded-lg border bg-card">
-            <DataTable
-              data={incomeData}
+            <DataTable 
+              data={incomeData || []}
               sortField={sort.field}
               sortDirection={sort.direction}
               onSort={handleSort}
             />
           </div>
-        )}
-      </div>
-    </div>
+        ) : (
+          <CardView 
+            data={incomeData || []} 
+            sortField={sort.field}
+            sortDirection={sort.direction}
+            onSort={handleSort}
+          />
+        )
+      )}
+    </main>
   );
 }

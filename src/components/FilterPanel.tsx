@@ -17,7 +17,13 @@ const formatCurrency = (value: number) => {
   return `$${(value / billion).toFixed(1)}B`;
 };
 
+const parseCurrency = (value: string) => {
+  const number = parseFloat(value.replace(/[^0-9.-]/g, ''));
+  return number * 1_000_000_000;
+};
+
 const formatYear = (value: number) => value.toString();
+const parseYear = (value: string) => parseInt(value);
 
 export default function FilterPanel({
   filters,
@@ -104,6 +110,9 @@ export default function FilterPanel({
               ]}
               onValueChange={handleYearChange}
               formatValue={formatYear}
+              parseValue={parseYear}
+              showMarks={true}
+              markCount={ranges.year[1] - ranges.year[0]}
               className="mt-2"
             />
 
@@ -118,6 +127,7 @@ export default function FilterPanel({
               ]}
               onValueChange={handleRevenueChange}
               formatValue={formatCurrency}
+              parseValue={parseCurrency}
               className="mt-6"
             />
 
@@ -132,6 +142,7 @@ export default function FilterPanel({
               ]}
               onValueChange={handleNetIncomeChange}
               formatValue={formatCurrency}
+              parseValue={parseCurrency}
               className="mt-6"
             />
           </div>

@@ -115,7 +115,7 @@ The app is configured for deployment on Vercel:
 2. Create a new project on Vercel
 3. Connect your repository
 4. Add your `FMP_API_KEY` to the Environment Variables
-5. Deploy!
+5. Deploy!!
 
 ## Contributing
 

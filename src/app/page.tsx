@@ -9,6 +9,7 @@ import CardView from "@/components/CardView";
 import FilterPanel from "@/components/FilterPanel";
 import { Button } from "@/components/ui/button";
 import { Layers, Table2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Home() {
   const [viewMode, setViewMode] = useState<"table" | "card">("table");
@@ -51,33 +52,59 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="container mx-auto px-4 py-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Apple Inc. Financial Data</h1>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant={viewMode === "table" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("table")}
-            title="Table View"
-          >
-            <Table2 className="h-5 w-5" />
-          </Button>
-          <Button
-            variant={viewMode === "card" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("card")}
-            title="Card View"
-          >
-            <Layers className="h-5 w-5" />
-          </Button>
-        </div>
-      </div>
-
+    <main className="container max-w-7xl mx-auto px-4 py-10">
       <FilterPanel 
         filters={filters} 
         onFilterChange={setFilters} 
       />
+
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div className="flex w-full sm:w-auto">
+          <Button
+            variant={viewMode === 'table' ? 'default' : 'outline'}
+            onClick={() => setViewMode('table')}
+            className="flex-1 sm:flex-initial gap-2"
+          >
+            <Table2 className="h-4 w-4" />
+            Table
+          </Button>
+          <Button
+            variant={viewMode === 'card' ? 'default' : 'outline'}
+            onClick={() => setViewMode('card')}
+            className="flex-1 sm:flex-initial gap-2 ml-2"
+          >
+            <Layers className="h-4 w-4" />
+            Cards
+          </Button>
+        </div>
+        {viewMode === 'card' && (
+          <Select
+            value={`${sortParams.field}-${sortParams.direction}`}
+            onValueChange={(value) => {
+              const [field] = value.split('-');
+              handleSort(field as 'date' | 'revenue' | 'netIncome');
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Sort by..." />
+            </SelectTrigger>
+            <SelectContent>
+              {[
+                { label: 'Date (Newest)', value: 'date-desc' },
+                { label: 'Date (Oldest)', value: 'date-asc' },
+                { label: 'Revenue (Highest)', value: 'revenue-desc' },
+                { label: 'Revenue (Lowest)', value: 'revenue-asc' },
+                { label: 'Net Income (Highest)', value: 'netIncome-desc' },
+                { label: 'Net Income (Lowest)', value: 'netIncome-asc' },
+              ].map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
 
       {error ? (
         <div className="text-red-500 text-center">
@@ -95,6 +122,9 @@ export default function Home() {
         <CardView 
           data={data || []} 
           isLoading={isLoading} 
+          sortField={sortParams.field}
+          sortDirection={sortParams.direction}
+          onSort={handleSort}
         />
       )}
     </main>

@@ -8,11 +8,46 @@ Visit the live application at: [https://data-filter-app.vercel.app](https://data
 
 ## Features
 
-- Display annual income statements in a responsive table
-- Filter data by date range, revenue, and net income
-- Sort data by any column (date, revenue, net income, etc.)
-- Server-side filtering and sorting for better performance
+- Display annual income statements in a responsive table and card view
+- **Server-Side Filtering and Sorting**
+  - Efficient data processing directly on the backend
+  - Reduces client-side computational overhead
+  - Supports complex filtering and sorting operations
+- Filter data by:
+  - Date range (Year)
+  - Revenue range
+  - Net Income range
+- Sort data by:
+  - Date (ascending/descending)
+  - Revenue (ascending/descending)
+  - Net Income (ascending/descending)
 - Mobile-friendly design using TailwindCSS
+- Interactive UI with table and card views
+
+## Server-Side Filtering and Sorting
+
+### How It Works
+- All filtering and sorting operations are performed on the Python backend
+- Reduces client-side data processing and improves performance
+- Supports complex, multi-parameter filtering
+- Minimizes data transfer by filtering data before sending to the client
+
+### Filtering Capabilities
+- **Date Range Filtering**
+  - Filter income statements by start and end years
+  - Precise year-based selection
+- **Revenue Filtering**
+  - Set minimum and maximum revenue thresholds
+  - Easily find statements within specific revenue ranges
+- **Net Income Filtering**
+  - Define net income boundaries
+  - Identify financial periods meeting specific profitability criteria
+
+### Sorting Mechanisms
+- Dynamic sorting across multiple fields
+- Support for ascending and descending order
+- Efficient sorting directly in the backend
+- Minimal client-side computational overhead
 
 ## Prerequisites
 
@@ -20,10 +55,30 @@ Visit the live application at: [https://data-filter-app.vercel.app](https://data
 - Python (v3.8 or higher)
 - Financial Modeling Prep API key
 
+## Project Structure
+
+```
+data-filter-app/
+├── api/                    # Vercel serverless functions
+│   └── income-statements.py  # Income statements endpoint
+├── src/
+│   ├── app/                # Next.js app directory
+│   ├── components/         # React components
+│   ├── lib/                # Utility functions and API client
+│   └── types/              # TypeScript type definitions
+├── public/                 # Static assets
+└── vercel.json            # Vercel deployment configuration
+```
+
 ## Getting Started
 
 1. Clone the repository
-2. Install dependencies:
+   ```bash
+   git clone https://github.com/calvin-www/data-filter-app.git
+   cd data-filter-app
+   ```
+
+2. Install dependencies
    ```bash
    # Install frontend dependencies
    npm install
@@ -33,10 +88,12 @@ Visit the live application at: [https://data-filter-app.vercel.app](https://data
    pip install -r requirements.txt
    cd ..
    ```
+
 3. Create a `.env` file in the root directory and add your API key:
    ```
    FMP_API_KEY=your_api_key_here
    ```
+
 4. Start the development servers:
    ```bash
    # Terminal 1: Start the Next.js frontend
@@ -46,24 +103,8 @@ Visit the live application at: [https://data-filter-app.vercel.app](https://data
    cd api
    python local_server.py
    ```
+
 5. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Project Structure
-
-```
-data-filter-app/
-├── api/                    # Vercel serverless functions
-│   ├── income-statements.py  # Income statements endpoint
-│   ├── local_server.py      # Local development server
-│   └── requirements.txt     # Python dependencies
-├── src/
-│   ├── app/                # Next.js app directory
-│   ├── components/         # React components
-│   ├── lib/                # Utility functions and API client
-│   └── types/              # TypeScript type definitions
-├── public/                 # Static assets
-└── vercel.json            # Vercel deployment configuration
-```
 
 ## Tech Stack
 
@@ -79,7 +120,7 @@ data-filter-app/
 - Vercel for deployment and hosting
 - Financial Modeling Prep API for financial data
 
-## API Endpoints
+## API Endpoint
 
 ### GET /api/income-statements
 Fetches and filters income statement data for Apple Inc.
@@ -101,12 +142,6 @@ The app uses two development servers:
 1. Next.js frontend server (port 3000)
 2. Python backend server (port 8000)
 
-To test the serverless functions locally:
-1. Make sure you have Python 3.8+ installed
-2. Install Python dependencies: `pip install -r api/requirements.txt`
-3. Start the local Python server: `python api/local_server.py`
-4. The backend will be available at `http://localhost:8000`
-
 ### Production Build
 - Run `npm run build` to create a production build
 - Run `npm run lint` to check for code style issues
@@ -114,17 +149,8 @@ To test the serverless functions locally:
 ## Deployment
 
 The app is configured for deployment on Vercel:
-
 1. Push code to GitHub
 2. Create a new project on Vercel
 3. Connect your repository
 4. Add your `FMP_API_KEY` to the Environment Variables
-5. Deploy!!
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+5. Deploy!

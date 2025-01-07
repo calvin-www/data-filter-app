@@ -31,3 +31,11 @@ export async function fetchIncomeStatements(
 
   return response.json();
 }
+
+export async function testApi() {
+  const response = await fetch(`${API_URL}/test`);
+  if (!response.ok) {
+    throw new Error('API test failed');
+  }
+  return response.json();
+}

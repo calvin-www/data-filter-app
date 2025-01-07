@@ -12,7 +12,7 @@ app = FastAPI()
 # Enable CORS with more permissive settings for production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins in production
+    allow_origins=["https://data-filter-app.vercel.app", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -136,3 +136,5 @@ async def get_income_statements(
 
 # Create handler for AWS Lambda / Vercel
 handler = Mangum(app)
+# Make handler available for import
+__all__ = ['handler']

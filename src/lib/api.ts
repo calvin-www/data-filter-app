@@ -26,7 +26,8 @@ export async function fetchIncomeStatements(
   const response = await fetch(`${API_URL}/income-statements?${params.toString()}`);
 
   if (!response.ok) {
-    throw new Error('Failed to fetch income statements');
+    const error = await response.text();
+    throw new Error(`Failed to fetch income statements: ${error}`);
   }
 
   return response.json();
@@ -35,7 +36,8 @@ export async function fetchIncomeStatements(
 export async function testApi() {
   const response = await fetch(`${API_URL}/test`);
   if (!response.ok) {
-    throw new Error('API test failed');
+    const error = await response.text();
+    throw new Error(`API test failed: ${error}`);
   }
   return response.json();
 }
